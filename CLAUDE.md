@@ -189,6 +189,10 @@ others → unresolved; build an entity-level index). It releases no code, so eve
   for `obj.run()` that is the `run` token (`end_col_offset - len(attr)`), since `col_offset` points at `obj`.
   Python AST columns are **UTF-8 byte offsets**; LSP uses **UTF-16 code units** → convert on non-ASCII lines.
 - Parse with `ast.parse`; skip-and-log syntax errors (Python 2 code, old code using `async` as an identifier, etc.).
+- Implemented refinements: re-exports are followed (`from .x import name` and `from .x import *` in `__init__.py`,
+  depth ≤ 4); module-level variables (`CONST = 1`, `_ = gettext_lazy`) resolve to their **file** entity (so a Calls
+  edge may point to a file, meaning "a module-level callable defined there"); identical sites in one entity are stored
+  once with a `count`; "generated" = only an explicit header comment saying the whole file is generated.
 
 #### P4 details [ours]
 - BM25 tokenization: split snake_case and camelCase, lowercase, also keep full dotted names and identifiers as tokens.

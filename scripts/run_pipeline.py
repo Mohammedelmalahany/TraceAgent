@@ -20,6 +20,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=None, help="process only the first N instances")
     parser.add_argument("--instances", nargs="*", default=None, help="explicit instance_ids to process")
     parser.add_argument("--overwrite", action="store_true", help="recompute outputs that already exist")
+    parser.add_argument("--workers", type=int, default=1, help="parallel processes (one repo per process)")
     return parser.parse_args()
 
 
@@ -53,6 +54,11 @@ def main() -> None:
             compare_with_cosil(settings, cosil)
         else:
             get_logger("gold").warning("CoSIL gt.json not found at %s; skipping validation", cosil)
+    elif args.step == "graph":
+        from semnav_gp.preprocessing.run_graph import run_graph
+
+        run_graph(settings, limit=args.limit, instance_ids=args.instances, overwrite=args.overwrite,
+                  workers=args.workers)
     else:
         raise SystemExit(f"Step '{args.step}' is not implemented yet.")
 
