@@ -85,6 +85,18 @@ def test_extract_gold_categories() -> None:
     assert gold["module_level_files"] == ["pkg/mod.py"]
 
 
+def test_added_class_is_not_an_edited_class() -> None:
+    # like matplotlib-24265: the patch adds `class _StyleLibrary(dict):`
+    old = "def use(x):\n    return x\n"
+    patch = ("--- a/m.py\n+++ b/m.py\n@@ -1,2 +1,8 @@\n+class Lib(dict):\n+    kind = 1\n+\n+    def get(self):\n"
+             "+        return 1\n+\n def use(x):\n-    return x\n+    return Lib()\n")
+    gold = extract_gold(patch, lambda p: old)
+    assert gold["edited_classes"] == []
+    assert gold["added_classes"] == ["m.py::Lib"]
+    assert gold["added_functions"] == ["m.py::Lib.get"]
+    assert gold["functions"] == ["m.py::use"]
+
+
 def test_form_feed_does_not_shift_line_numbers() -> None:
     # A form feed (\x0c) inside a line: str.splitlines() would split there, ast does not.
     old = "def a():\n    s = 'x\x0cy'\n    return s\n\n\ndef b():\n    return 1\n"

@@ -107,3 +107,36 @@ measured on real data. Imports and inheritance are almost always syntactically d
 
 **Coverage check:** every gold file (31/31) and gold function (36/36) of the sample exists as a node in the
 graph, so localization can reach the correct answer.
+
+### Full run (all 297 snapshots, all 300 issues)
+
+Built with 6 workers in ~85 min wall time (120 CPU-minutes); 588 MB compressed on disk.
+
+| repo | snapshots | avg .py files | avg entities | avg resolved edges | avg unresolved sites | Calls unresolved | avg build |
+|---|---|---|---|---|---|---|---|
+| django | 114 | 2,666 | 34,163 | 86,857 | 70,695 | 71.3% | 19 s |
+| sympy | 74 | 1,334 | 33,331 | 163,063 | 65,741 | 33.2% | 57 s |
+| matplotlib | 23 | 895 | 11,166 | 26,985 | 29,698 | 70.0% | 11 s |
+| scikit-learn | 23 | 759 | 8,569 | 27,469 | 17,781 | 55.1% | 10 s |
+| pytest | 17 | 216 | 4,496 | 8,506 | 10,511 | 83.2% | 3 s |
+| sphinx | 16 | 528 | 7,033 | 14,672 | 10,981 | 74.8% | 5 s |
+| astropy | 6 | 850 | 16,036 | 40,182 | 34,436 | 61.5% | 15 s |
+| requests | 6 | 91 | 908 | 1,924 | 930 | 60.7% | 2 s |
+| pylint | 6 | 1,707 | 9,485 | 13,476 | 7,052 | 68.7% | 4 s |
+| xarray | 5 | 147 | 4,702 | 13,666 | 9,894 | 52.2% | 5 s |
+| seaborn | 4 | 149 | 2,660 | 6,130 | 6,482 | 68.7% | 3 s |
+| flask | 3 | 78 | 951 | 1,899 | 1,845 | 78.9% | 1 s |
+
+Unresolved share over all snapshots: **Calls 55.1%**, References 53.4%, Imports 0.3%, Inherits 0.2%.
+sympy has the lowest share (33%) because it calls many module-level functions directly; pytest the highest (83%)
+because it is heavily object-oriented (`self.…`, `config.…`, `item.…`).
+
+**Skipped files (summed over all snapshots):** generated 399 (ANTLR parsers in sympy, PLY tables in astropy),
+syntax errors 132 (Python 2 docs scripts, intentionally broken pylint fixtures), too large 62 (sympy rubi rule/test
+files > 1 MB), symlinks 12, decoding errors 8. All were inspected; no hand-written source file is lost.
+
+**Coverage over all 300 issues:** gold files **300/300**, gold functions **317/317**, edited classes **17/17** are
+nodes of their snapshot's graph.
+*Found by this check:* 2 gold "edited classes" were actually classes **added** by the patch
+(`matplotlib__matplotlib-24265` `_StyleLibrary`, `sphinx-doc__sphinx-7686` `ModuleScanner`); P1 now stores them in
+`added_classes`.

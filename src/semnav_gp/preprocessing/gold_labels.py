@@ -13,7 +13,7 @@ Rules [ours, see CLAUDE.md §3.2 "P1 details"]:
 
 import ast
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from semnav_gp.preprocessing.patch_parser import FilePatch, apply_patch_to_text, parse_patch, relocate_hunks
 
@@ -67,8 +67,9 @@ class FileGold:
     path: str
     modified_functions: set[str]
     added_functions: set[str]
-    edited_classes: set[str]  # class-body edits outside any method
+    edited_classes: set[str]  # class-body edits outside any method (class existed before the patch)
     module_level: bool  # edits outside any class/function
+    added_classes: set[str] = field(default_factory=set)  # classes that only exist after the patch
     parse_error: str | None = None
     offset_hunks: int = 0  # hunks whose header line numbers were wrong (fixed by context matching)
     unmatched_hunks: int = 0  # hunks whose context was not found in the old file
@@ -87,12 +88,16 @@ def gold_for_file(fp: FilePatch, old_text: str | None) -> FileGold:
         g.parse_error = f"{type(exc).__name__}: {exc}"
         return g
     old_functions = {s.qualname for s in old_scopes if s.kind == "function"}
+    old_classes = {s.qualname for s in old_scopes if s.kind == "class"}
 
     def record(scope: Scope | None, existed: bool) -> None:
         if scope is None:
             g.module_level = True
         elif scope.kind == "class":
-            g.edited_classes.add(scope.qualname)
+            if scope.qualname in old_classes:
+                g.edited_classes.add(scope.qualname)
+            else:  # e.g. `+class _StyleLibrary(dict):` — a brand-new class
+                g.added_classes.add(scope.qualname)
         elif existed:
             g.modified_functions.add(scope.qualname)
         else:
@@ -113,6 +118,7 @@ def gold_for_file(fp: FilePatch, old_text: str | None) -> FileGold:
 def extract_gold(patch: str, read_old_file) -> dict:
     """`read_old_file(path) -> str | None` returns the pre-patch content of a file."""
     files, added_files, functions, added_functions, classes, module_files, errors = [], [], [], [], [], [], []
+    added_classes: list[str] = []
     offset_hunks = unmatched_hunks = 0
     for fp in parse_patch(patch):
         if fp.is_new_file:
@@ -123,6 +129,7 @@ def extract_gold(patch: str, read_old_file) -> dict:
         functions += [f"{fp.path}::{q}" for q in sorted(g.modified_functions)]
         added_functions += [f"{fp.path}::{q}" for q in sorted(g.added_functions)]
         classes += [f"{fp.path}::{q}" for q in sorted(g.edited_classes)]
+        added_classes += [f"{fp.path}::{q}" for q in sorted(g.added_classes)]
         if g.module_level:
             module_files.append(fp.path)
         if g.parse_error:
@@ -134,6 +141,7 @@ def extract_gold(patch: str, read_old_file) -> dict:
         "functions": functions,
         "added_functions": added_functions,
         "edited_classes": classes,
+        "added_classes": added_classes,
         "module_level_files": module_files,
         "added_files": added_files,
         "parse_errors": errors,

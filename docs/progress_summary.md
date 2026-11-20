@@ -54,12 +54,12 @@ We checked every claim in `CLAUDE.md` against the paper itself (arXiv 2609.31176
 | Collect | download SWE-bench Lite, clone 12 repos, verify commits | `collection/dataset_loader.py`, `repo_manager.py`, `collect.py` | ✅ |
 | P1 Gold labels | which files/functions the real fix changed | `preprocessing/patch_parser.py`, `gold_labels.py`, `run_gold.py` | ✅ |
 | P2 AST parsing | entities + raw relation sites per file | `preprocessing/ast_parser.py` | ✅ |
-| P3 Graph | resolve relations → edges / unresolved sites | `preprocessing/graph_builder.py`, `run_graph.py` | ✅ code · ⏳ full run |
+| P3 Graph | resolve relations → edges / unresolved sites | `preprocessing/graph_builder.py`, `run_graph.py` | ✅ (all 297 snapshots) |
 | P4 BM25 index | search engine over entities | — | ⏭ next |
 | P5 Issue cues | rule-based evidence from the issue text | — | ⏭ |
 | P6 Stats / figures | tables + plots for the seminar | — | ⏭ |
 
-**Tests:** 25 unit tests (config, collection, gold labels, graph), all passing.
+**Tests:** 26 unit tests (config, collection, gold labels, graph), all passing.
 
 **How to run:**
 ```bash
@@ -85,13 +85,16 @@ pytest
   was inspected: they are convention differences (added methods, nested functions) or CoSIL labelling errors
   (e.g. names taken from the `@@` hunk header).
 
-### P2 + P3 — Semantic Navigation Graph (sample of 31 snapshots, all 12 repos)
-- Django: 2,547 files, ~31.7k entities, built in ~11 s; each graph is ~2.5 MB compressed.
-- **63% of calls are unresolved** (they depend on runtime types, e.g. `obj.run()`), while imports and inheritance are
-  >98% resolved. This is the paper's first problem measured on real data, and why Pyright is needed later.
-- **Coverage: every gold file (31/31) and gold function (36/36) is a node in the graph.**
-- **Full run:** building graphs for all 297 snapshots is running in the background (153/297 finished at the time of
-  writing, ~190 MB so far).
+### P2 + P3 — Semantic Navigation Graph (all 297 snapshots)
+- **297 graphs built**, ~85 min with 6 workers, 588 MB compressed, stored in `D:\semnav-data\processed\graphs\`.
+- A typical Django snapshot: 2,666 files, ~34k entities, ~87k resolved edges, ~71k unresolved sites (~19 s to build).
+- **55% of calls are unresolved** over all snapshots (from 33% in sympy to 83% in pytest). They depend on runtime
+  types, e.g. `obj.run()`. Imports and inheritance are >99.7% resolved. This is the paper's first problem measured on
+  real data, and why Pyright is needed later.
+- **Coverage over all 300 issues: gold files 300/300, gold functions 317/317, edited classes 17/17** are nodes of the
+  graph, so the correct answer is always reachable.
+- Skipped files (generated parsers, Python 2 scripts, broken linter fixtures, >1 MB files, symlinks) were all
+  inspected; no hand-written source is lost.
 
 ## 5. Problems found and fixed (good material for the seminar)
 
@@ -102,6 +105,7 @@ pytest
 | 3 | A removed line like `-- comment` looks like a file header `---` | the diff parser splits a file in two | count the remaining lines of each hunk |
 | 4 | Re-exports via `from .fields import *` in `__init__.py` | 495 imports stayed unresolved in Django | follow star re-exports → 20 left |
 | 5 | Loose "generated file" rule | skipped the real `matplotlib/pyplot.py`, missed real generated PLY tables | only skip files whose header comment says the *whole* file is generated |
+| 6 | Classes *added* by a patch were labelled "edited classes" (2 issues) | gold pointed at classes that do not exist pre-patch | new `added_classes` field (found by the full coverage check) |
 
 ## 6. Design decisions we made (where the paper is silent)
 
@@ -124,10 +128,12 @@ pytest
 | `5277574` | P1 gold label extraction with CoSIL validation |
 | `901bc24` | P2+P3 AST parser and Semantic Navigation Graph builder |
 | `8053523` | Switch explanation language to English in CLAUDE.md |
+| `d1de727` | Progress summary document |
+| (next) | Full graph run results + `added_classes` fix in P1 |
 
 ## 8. Next steps
 
-1. Finish the full graph build (297 snapshots) and check gold coverage on all 300 issues.
+1. ~~Finish the full graph build and check gold coverage~~ ✅ done.
 2. **P4** — entity text + BM25 index; sanity check: are gold functions in the top-k for each issue?
 3. **P5** — rule-based issue cues for all 300 issues; how often does a cue directly name a gold file/function?
 4. **P6** — statistics and figures (notebook) + finish `docs/seminar1.md`.
