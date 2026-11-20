@@ -6,11 +6,11 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-from semnav_gp.collection import repo_manager as rm
-from semnav_gp.collection.dataset_loader import load_instances
-from semnav_gp.helpers.config import Settings
-from semnav_gp.helpers.logging import get_logger
-from semnav_gp.preprocessing.gold_labels import extract_gold
+from traceagent.collection import repo_manager as rm
+from traceagent.collection.dataset_loader import load_instances
+from traceagent.helpers.config import Settings
+from traceagent.helpers.logging import get_logger
+from traceagent.preprocessing.gold_labels import extract_gold
 
 log = get_logger(__name__)
 

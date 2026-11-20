@@ -4,10 +4,10 @@ import json
 
 from tqdm import tqdm
 
-from semnav_gp.collection import repo_manager as rm
-from semnav_gp.collection.dataset_loader import load_instances, summarize
-from semnav_gp.helpers.config import Settings
-from semnav_gp.helpers.logging import get_logger
+from traceagent.collection import repo_manager as rm
+from traceagent.collection.dataset_loader import load_instances, summarize
+from traceagent.helpers.config import Settings
+from traceagent.helpers.logging import get_logger
 
 log = get_logger(__name__)
 

@@ -1,7 +1,7 @@
 """Project settings, read from environment variables / the `.env` file.
 
 Usage:
-    from semnav_gp.helpers.config import get_settings
+    from traceagent.helpers.config import get_settings
     settings = get_settings()
     print(settings.repos_dir)
 """
@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     )
 
     # Root for all data. Must be outside OneDrive / synced folders.
-    DATA_DIR: Path = Path("D:/semnav-data")
+    DATA_DIR: Path = Path("D:/traceagent-data")
 
     DATASET_NAME: str = "princeton-nlp/SWE-bench_Lite"
     DATASET_SPLIT: str = "test"

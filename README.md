@@ -1,7 +1,11 @@
-# SemNav-GP — Repository-Level Issue Localization
+# TraceAgent: Repository-Level Issue Localization Using Semantic Navigation
 
-Graduation project built on **SemNav: Semantic Navigation for Repository-Level Issue Localization**
+Graduation project in Computer Science. TraceAgent is built on the architecture of
+**SemNav: Semantic Navigation for Repository-Level Issue Localization**
 ([arXiv:2609.31176](https://arxiv.org/abs/2609.31176)).
+
+> Working with Claude Code: open this folder in Claude Code — `CLAUDE.md` holds the full project context
+> (design decisions, what the paper specifies vs. what we decided, and the step-by-step plan).
 
 **Issue localization:** given a GitHub issue and a code repository, return a ranked list of the files and functions
 that need to change to fix the issue.
@@ -29,7 +33,8 @@ pip install -e .
 copy .env.example .env
 ```
 
-Edit `.env` → set `DATA_DIR` to a folder **outside OneDrive** (default `D:/semnav-data`).
+Edit `.env` → set `DATA_DIR` to a folder **outside OneDrive / any synced folder** (default `D:/traceagent-data`).
+All data (cloned repos, graphs, indexes) lives there and is never committed; rebuild it with the commands below.
 
 ## Run
 
@@ -55,7 +60,7 @@ Results and findings: [docs/seminar1.md](docs/seminar1.md).
 ## Project layout
 
 ```
-src/semnav_gp/
+src/traceagent/
   helpers/        config (.env) + logging
   models/         data schemas
   collection/     dataset loading, repo cloning
@@ -68,4 +73,6 @@ docs/             seminar write-ups
 ```
 
 ## Acknowledgements
-Parts of the preprocessing are adapted from [LocAgent](https://github.com/gersteinlab/LocAgent) (Apache-2.0).
+Architecture from the SemNav paper (Wei, Lei, Li). Preprocessing design informed by
+[LocAgent](https://github.com/gersteinlab/LocAgent) (Apache-2.0); gold-label validation uses
+[CoSIL](https://github.com/ZhonghaoJiang/CoSIL)'s `gt.json`.

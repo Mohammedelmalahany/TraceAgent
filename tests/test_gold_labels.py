@@ -1,5 +1,5 @@
-from semnav_gp.preprocessing.gold_labels import collect_scopes, extract_gold
-from semnav_gp.preprocessing.patch_parser import apply_patch_to_text, parse_patch
+from traceagent.preprocessing.gold_labels import collect_scopes, extract_gold
+from traceagent.preprocessing.patch_parser import apply_patch_to_text, parse_patch
 
 OLD = '''\
 import os

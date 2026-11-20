@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from semnav_gp.helpers.config import Settings
+from traceagent.helpers.config import Settings
 
 
 def test_derived_paths_live_under_data_dir(tmp_path: Path) -> None:

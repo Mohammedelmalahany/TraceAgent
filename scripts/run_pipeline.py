@@ -8,14 +8,14 @@ Examples:
 
 import argparse
 
-from semnav_gp.helpers.config import get_settings
-from semnav_gp.helpers.logging import get_logger, setup_logging
+from traceagent.helpers.config import get_settings
+from traceagent.helpers.logging import get_logger, setup_logging
 
 STEPS = ["info", "collect", "gold", "graph", "index", "cues", "stats", "all"]
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="SemNav-GP data pipeline")
+    parser = argparse.ArgumentParser(description="TraceAgent data pipeline")
     parser.add_argument("--step", choices=STEPS, default="info", help="pipeline step to run")
     parser.add_argument("--limit", type=int, default=None, help="process only the first N instances")
     parser.add_argument("--instances", nargs="*", default=None, help="explicit instance_ids to process")
@@ -42,11 +42,11 @@ def main() -> None:
     if args.step == "info":
         run_info()
     elif args.step == "collect":
-        from semnav_gp.collection.collect import run_collection
+        from traceagent.collection.collect import run_collection
 
         run_collection(settings, limit=args.limit, instance_ids=args.instances)
     elif args.step == "gold":
-        from semnav_gp.preprocessing.run_gold import compare_with_cosil, run_gold
+        from traceagent.preprocessing.run_gold import compare_with_cosil, run_gold
 
         run_gold(settings, limit=args.limit, instance_ids=args.instances, overwrite=args.overwrite)
         cosil = settings.raw_dir / "external" / "cosil_gt.json"
@@ -55,12 +55,12 @@ def main() -> None:
         else:
             get_logger("gold").warning("CoSIL gt.json not found at %s; skipping validation", cosil)
     elif args.step == "graph":
-        from semnav_gp.preprocessing.run_graph import run_graph
+        from traceagent.preprocessing.run_graph import run_graph
 
         run_graph(settings, limit=args.limit, instance_ids=args.instances, overwrite=args.overwrite,
                   workers=args.workers)
     elif args.step == "index":
-        from semnav_gp.preprocessing.run_index import run_index
+        from traceagent.preprocessing.run_index import run_index
 
         run_index(settings, limit=args.limit, instance_ids=args.instances, overwrite=args.overwrite,
                   workers=args.workers)

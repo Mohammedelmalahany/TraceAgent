@@ -2,8 +2,8 @@
 
 import pytest
 
-from semnav_gp.preprocessing.ast_parser import parse_file
-from semnav_gp.preprocessing.graph_builder import build_from_sources, module_names
+from traceagent.preprocessing.ast_parser import parse_file
+from traceagent.preprocessing.graph_builder import build_from_sources, module_names
 
 TOY = {
     "pkg/__init__.py": "from .models import Model\n",

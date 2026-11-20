@@ -17,6 +17,13 @@ logs/
 outputs/
 repos/
 *.pkl
+# safety net if someone points DATA_DIR inside the project: never commit graphs / indexes
+*.jsonl.gz
+*.npz
+
+# Claude Code: CLAUDE.md is SHARED (committed); personal notes / permissions stay local
+CLAUDE.local.md
+.claude/settings.local.json
 
 # Notebooks
 .ipynb_checkpoints/

@@ -8,7 +8,7 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-from semnav_gp.helpers.logging import get_logger
+from traceagent.helpers.logging import get_logger
 
 log = get_logger(__name__)
 

@@ -18,11 +18,11 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-from semnav_gp.collection import repo_manager as rm
-from semnav_gp.collection.dataset_loader import load_instances
-from semnav_gp.helpers.config import Settings, get_settings
-from semnav_gp.helpers.logging import get_logger
-from semnav_gp.preprocessing.graph_builder import SNG, build_from_sources
+from traceagent.collection import repo_manager as rm
+from traceagent.collection.dataset_loader import load_instances
+from traceagent.helpers.config import Settings, get_settings
+from traceagent.helpers.logging import get_logger
+from traceagent.preprocessing.graph_builder import SNG, build_from_sources
 
 log = get_logger(__name__)
 

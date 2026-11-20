@@ -15,7 +15,7 @@ import ast
 import warnings
 from dataclasses import dataclass, field
 
-from semnav_gp.preprocessing.patch_parser import FilePatch, apply_patch_to_text, parse_patch, relocate_hunks
+from traceagent.preprocessing.patch_parser import FilePatch, apply_patch_to_text, parse_patch, relocate_hunks
 
 
 @dataclass(frozen=True)

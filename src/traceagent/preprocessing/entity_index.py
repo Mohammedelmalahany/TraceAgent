@@ -22,8 +22,8 @@ from pathlib import Path
 import numpy as np
 from scipy import sparse
 
-from semnav_gp.models.graph import Entity
-from semnav_gp.preprocessing.patch_parser import split_lines
+from traceagent.models.graph import Entity
+from traceagent.preprocessing.patch_parser import split_lines
 
 # ----------------------------------------------------------------------------- tokenizer
 

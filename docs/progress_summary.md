@@ -1,4 +1,4 @@
-# Progress Summary — SemNav-GP (Seminar 1: Data Collection + Preprocessing)
+# Progress Summary — TraceAgent (Seminar 1: Data Collection + Preprocessing)
 
 *Last updated: 2026-11-20*
 
@@ -42,7 +42,7 @@ We checked every claim in `CLAUDE.md` against the paper itself (arXiv 2609.31176
 | Item | Decision |
 |---|---|
 | OS / Python | Windows 11, venv with **Python 3.12.6** (system Python 3.14 avoided for library compatibility) |
-| Data location | **`D:\semnav-data`** (outside OneDrive, set in `.env`) |
+| Data location | **`DATA_DIR`** in `.env`, outside OneDrive (default `D:\traceagent-data`; on the original machine `D:\semnav-data`) |
 | Repo strategy | one clone per repo; `git checkout <base_commit>` per snapshot (12 folders, not ~300 copies) |
 | Version control | git, small commits on `main` (local only, not pushed) |
 
@@ -87,7 +87,7 @@ pytest
   (e.g. names taken from the `@@` hunk header).
 
 ### P2 + P3 — Semantic Navigation Graph (all 297 snapshots)
-- **297 graphs built**, ~85 min with 6 workers, 588 MB compressed, stored in `D:\semnav-data\processed\graphs\`.
+- **297 graphs built**, ~85 min with 6 workers, 588 MB compressed, stored in `DATA_DIR\processed\graphs\`.
 - A typical Django snapshot: 2,666 files, ~34k entities, ~87k resolved edges, ~71k unresolved sites (~19 s to build).
 - **55% of calls are unresolved** over all snapshots (from 33% in sympy to 83% in pytest). They depend on runtime
   types, e.g. `obj.run()`. Imports and inheritance are >99.7% resolved. This is the paper's first problem measured on

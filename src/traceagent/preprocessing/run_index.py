@@ -14,14 +14,14 @@ from pathlib import Path
 import numpy as np
 from tqdm import tqdm
 
-from semnav_gp.collection import repo_manager as rm
-from semnav_gp.collection.dataset_loader import load_instances
-from semnav_gp.helpers.config import Settings, get_settings
-from semnav_gp.helpers.logging import get_logger
-from semnav_gp.models.graph import Entity
-from semnav_gp.preprocessing.ast_parser import decode_source
-from semnav_gp.preprocessing.entity_index import BM25Index, build_index, tokenize
-from semnav_gp.preprocessing.run_graph import graph_dir, snapshot_key
+from traceagent.collection import repo_manager as rm
+from traceagent.collection.dataset_loader import load_instances
+from traceagent.helpers.config import Settings, get_settings
+from traceagent.helpers.logging import get_logger
+from traceagent.models.graph import Entity
+from traceagent.preprocessing.ast_parser import decode_source
+from traceagent.preprocessing.entity_index import BM25Index, build_index, tokenize
+from traceagent.preprocessing.run_graph import graph_dir, snapshot_key
 
 log = get_logger(__name__)
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from semnav_gp.preprocessing.entity_index import BM25Index, build_index, entity_texts, tokenize
-from semnav_gp.preprocessing.graph_builder import build_from_sources
+from traceagent.preprocessing.entity_index import BM25Index, build_index, entity_texts, tokenize
+from traceagent.preprocessing.graph_builder import build_from_sources
 
 SRC = {
     "app/dates.py": (

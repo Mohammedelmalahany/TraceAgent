@@ -1,4 +1,7 @@
-# CLAUDE.md — Graduation Project Context (SemNav-based Issue Localization)
+# CLAUDE.md — TraceAgent: Repository-Level Issue Localization Using Semantic Navigation
+
+> **Project name:** TraceAgent (official title from the Seminar 1 presentation). Repo: https://github.com/Mohammedelmalahany/TraceAgent
+> Python package: `src/traceagent/`. TraceAgent re-implements the architecture of the SemNav paper (below).
 
 > This file is the full hand-off context for Claude Code. Read it completely before doing anything.
 > It summarizes a prior planning conversation: what the project is, what we decided, what code already
@@ -22,7 +25,7 @@
 
 ## 1. The project in one paragraph
 
-We are building our graduation project on top of the paper
+We are building our graduation project, **TraceAgent**, on top of the paper
 **"SemNav: Semantic Navigation for Repository-Level Issue Localization"** — arXiv: https://arxiv.org/abs/2609.31176 (v1, 25 Sep 2026)
 (the arXiv abs page lists the title as "Semantic Navigation for Issue Localization in Code Repository"; HTML/v1 header uses the SemNav title).
 Authors: Yunxiang Wei, Zhenyu Lei, Jundong Li — affiliations: Independent Researcher; University of Virginia.
@@ -131,7 +134,7 @@ A benchmark row contains only the issue + metadata, **not the code**. The real d
 3. Environment [ours]: Windows 11; venv with **Python 3.12** (`py -3.12`; system `python` is 3.14 — avoid for library
    compatibility); git 2.56; Node 24 (for Pyright later). `git config core.longpaths true`.
    Disk: C: ~64 GB free, D: ~29 GB free.
-   **`DATA_DIR = D:\semnav-data`** (outside OneDrive), set via `.env` — the code folder is OneDrive-synced
+   **`DATA_DIR`** (default `D:\traceagent-data`; on the original author machine `D:\semnav-data`; outside OneDrive), set via `.env` — the code folder is OneDrive-synced
    and must not receive cloned repos / thousands of output files.
 
 Repo distribution in SWE-bench Lite: django 114, sympy 77, matplotlib 23, scikit-learn 23, pytest 17, sphinx 16,
@@ -253,7 +256,7 @@ Files: just the relative path.
 ## 5. Target project structure (proposal — refine but keep the spirit)
 
 ```
-semnav-gp/
+TraceAgent/
 ├── CLAUDE.md
 ├── README.md                  # overview, setup, how to run each step, results table
 ├── pyproject.toml             # or requirements.txt (+ requirements-dev.txt)
@@ -261,12 +264,12 @@ semnav-gp/
 ├── .env                       # local, git-ignored
 ├── .gitignore                 # data/, .env, __pycache__, .venv, *.pkl, logs/, outputs/, repos/
 ├── configs/                   # optional YAML for experiment params
-│   (data lives OUTSIDE the repo at $DATA_DIR = D:\semnav-data — not in OneDrive)
+│   (data lives OUTSIDE the repo at $DATA_DIR, e.g. D:\traceagent-data — not in OneDrive)
 $DATA_DIR/
 │   ├── raw/                   # benchmark files (jsonl), cloned repos (one working copy per repo, checked out per commit)
 │   ├── interim/               # temporary files
 │   └── processed/             # graphs, indexes, cues, gold labels, stats
-├── src/semnav_gp/
+├── src/traceagent/
 │   ├── __init__.py
 │   ├── helpers/
 │   │   ├── config.py          # pydantic-settings: reads .env
@@ -333,7 +336,7 @@ $DATA_DIR/
 
 1. **Scaffold**: structure above, `.gitignore`, `.env.example`, `config.py`, README skeleton, venv, `git init`, first commit.
 2. **Collect**: load SWE-bench Lite (HF `princeton-nlp/SWE-bench_Lite`, fallback to XAgent's jsonl); clone 12 repos
-   into `D:\semnav-data`; verify every `base_commit` exists (checkout happens per instance in P1–P4). Start with `--limit 10`, then full.
+   into `DATA_DIR`; verify every `base_commit` exists (checkout happens per instance in P1–P4). Start with `--limit 10`, then full.
 3. **P1 gold labels** → validate against CoSIL `gt.json`; report agreement %.
 4. **P2 + P3 AST + graph** on a tiny toy repo first (with unit tests), then 1 real instance, then a sample (~30), then all.
 5. **P4 index**, quick sanity query (search an issue → are gold functions in top-k?).
@@ -353,7 +356,7 @@ Run long batch jobs with progress bars, resumable (skip outputs that already exi
 
 ## 9. Open questions to confirm with me
 - ~~OS and Python version~~ → answered: Windows 11, Python 3.12 venv, git 2.56, Node 24; C: ~64 GB, D: ~29 GB free.
-- ~~`DATA_DIR` location~~ → answered: `D:\semnav-data`.
-- Where the code lives: local only or a GitHub repo for the team.
+- ~~`DATA_DIR` location~~ → answered: set per machine in `.env` (original machine: `D:\semnav-data`).
+- ~~Where the code lives~~ → answered: public GitHub repo https://github.com/Mohammedelmalahany/TraceAgent (teammates clone it; `CLAUDE.md` is shared, data is rebuilt locally).
 - Run the graph build on all 300 instances or a sample for the seminar.
 - Whether to also collect PLocBench and SWE-Explore now (availability not yet verified) or only SWE-bench Lite.

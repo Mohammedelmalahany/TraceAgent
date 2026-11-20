@@ -1,9 +1,9 @@
 import subprocess
 from pathlib import Path
 
-from semnav_gp.collection import repo_manager as rm
-from semnav_gp.collection.dataset_loader import summarize
-from semnav_gp.models.instance import Instance
+from traceagent.collection import repo_manager as rm
+from traceagent.collection.dataset_loader import summarize
+from traceagent.models.instance import Instance
 
 
 def _instance(iid: str, repo: str, commit: str) -> Instance:

@@ -10,9 +10,9 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from semnav_gp.helpers.config import Settings
-from semnav_gp.helpers.logging import get_logger
-from semnav_gp.models.instance import Instance
+from traceagent.helpers.config import Settings
+from traceagent.helpers.logging import get_logger
+from traceagent.models.instance import Instance
 
 log = get_logger(__name__)
 

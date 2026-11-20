@@ -18,8 +18,8 @@ import builtins
 from collections import Counter
 from dataclasses import dataclass, field
 
-from semnav_gp.models.graph import Edge, Entity, GraphStats, RelationSite
-from semnav_gp.preprocessing.ast_parser import FileParse, ImportBinding, RawSite, SkipFile, parse_file
+from traceagent.models.graph import Edge, Entity, GraphStats, RelationSite
+from traceagent.preprocessing.ast_parser import FileParse, ImportBinding, RawSite, SkipFile, parse_file
 
 BUILTIN_NAMES = set(dir(builtins))
 SELF_NAMES = {"self", "cls"}
