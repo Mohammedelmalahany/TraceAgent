@@ -63,6 +63,16 @@ def checkout(path: Path, commit: str) -> None:
     _git(["clean", "-fdq"], cwd=path)
 
 
+def read_file_at(path: Path, commit: str, file_path: str) -> str | None:
+    """Content of `file_path` at `commit` without checking out (`git show commit:file`). None if missing."""
+    proc = subprocess.run(
+        ["git", "show", f"{commit}:{file_path}"], cwd=path, capture_output=True,
+    )
+    if proc.returncode != 0:
+        return None
+    return proc.stdout.decode("utf-8", errors="replace")
+
+
 def head_commit(path: Path) -> str:
     return _git(["rev-parse", "HEAD"], cwd=path).stdout.strip()
 

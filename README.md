@@ -36,13 +36,19 @@ Edit `.env` → set `DATA_DIR` to a folder **outside OneDrive** (default `D:/sem
 ```bash
 python scripts/run_pipeline.py --step info
 python scripts/run_pipeline.py --step collect --limit 10   # quick try: 10 issues, 2 repos
-python scripts/run_pipeline.py --step collect              # all 300 issues, 12 repos (~several GB)
+python scripts/run_pipeline.py --step collect              # all 300 issues, 12 repos (~1.8 GB)
+python scripts/run_pipeline.py --step gold                 # P1 gold labels (+ CoSIL validation if available)
 pytest
 ```
 
 `collect` downloads SWE-bench Lite (cached to `DATA_DIR/raw/swe_bench_lite.jsonl`), clones each needed repo once
 into `DATA_DIR/raw/repos/<owner>__<name>`, verifies every `base_commit` exists, and writes
 `DATA_DIR/processed/collection_report.json`. Re-running is safe: cached data and existing clones are reused.
+
+`gold` writes `DATA_DIR/processed/gold/<instance_id>.json`. To validate against CoSIL, put
+[CoSIL's `evaluation/gt.json`](https://github.com/ZhonghaoJiang/CoSIL) at `DATA_DIR/raw/external/cosil_gt.json`;
+the report goes to `DATA_DIR/processed/stats/gold_vs_cosil.json`. Use `--overwrite` to recompute.
+Results and findings: [docs/seminar1.md](docs/seminar1.md).
 
 ## Project layout
 
