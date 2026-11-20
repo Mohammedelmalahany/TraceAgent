@@ -9,8 +9,8 @@
 ## 0. How to work with me (the student)
 
 - I am a graduation-project student. I am **new to AI agents** and **new to working with code repositories as data**
-  (ASTs, code graphs, etc. are new to me). Explain every step simply, **in Egyptian Arabic**, with small concrete examples.
-  Keep code, identifiers, comments and docs in English.
+  (ASTs, code graphs, etc. are new to me). Explain every step simply, **in English**, with small concrete examples.
+  Keep code, identifiers, comments and docs in English too.
 - Work **one step at a time**. After each step: tell me what you did, what file(s) changed, how to run it, and what output to expect.
 - The project must look **professional** (clean architecture, config via `.env`, proper `.gitignore`, README, reproducible commands),
   in the spirit of well-structured open-source teaching projects such as Eng. Abu Bakr Soliman's *mini-rag*
