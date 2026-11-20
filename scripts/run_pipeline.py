@@ -2,7 +2,8 @@
 
 Examples:
     python scripts/run_pipeline.py --step info
-    python scripts/run_pipeline.py --step collect --limit 10   (implemented in the next step)
+    python scripts/run_pipeline.py --step collect --limit 10
+    python scripts/run_pipeline.py --step collect
 """
 
 import argparse
@@ -38,6 +39,10 @@ def main() -> None:
 
     if args.step == "info":
         run_info()
+    elif args.step == "collect":
+        from semnav_gp.collection.collect import run_collection
+
+        run_collection(settings, limit=args.limit, instance_ids=args.instances)
     else:
         raise SystemExit(f"Step '{args.step}' is not implemented yet.")
 

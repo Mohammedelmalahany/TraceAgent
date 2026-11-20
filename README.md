@@ -35,8 +35,14 @@ Edit `.env` → set `DATA_DIR` to a folder **outside OneDrive** (default `D:/sem
 
 ```bash
 python scripts/run_pipeline.py --step info
+python scripts/run_pipeline.py --step collect --limit 10   # quick try: 10 issues, 2 repos
+python scripts/run_pipeline.py --step collect              # all 300 issues, 12 repos (~several GB)
 pytest
 ```
+
+`collect` downloads SWE-bench Lite (cached to `DATA_DIR/raw/swe_bench_lite.jsonl`), clones each needed repo once
+into `DATA_DIR/raw/repos/<owner>__<name>`, verifies every `base_commit` exists, and writes
+`DATA_DIR/processed/collection_report.json`. Re-running is safe: cached data and existing clones are reused.
 
 ## Project layout
 
