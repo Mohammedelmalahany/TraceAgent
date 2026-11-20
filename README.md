@@ -39,6 +39,7 @@ python scripts/run_pipeline.py --step collect --limit 10   # quick try: 10 issue
 python scripts/run_pipeline.py --step collect              # all 300 issues, 12 repos (~1.8 GB)
 python scripts/run_pipeline.py --step gold                 # P1 gold labels (+ CoSIL validation if available)
 python scripts/run_pipeline.py --step graph --workers 6    # P2+P3 graphs for all 297 snapshots
+python scripts/run_pipeline.py --step index --workers 6    # P4 BM25 indexes + sanity check vs gold
 pytest
 ```
 

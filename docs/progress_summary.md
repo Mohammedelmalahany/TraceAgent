@@ -55,11 +55,11 @@ We checked every claim in `CLAUDE.md` against the paper itself (arXiv 2609.31176
 | P1 Gold labels | which files/functions the real fix changed | `preprocessing/patch_parser.py`, `gold_labels.py`, `run_gold.py` | ✅ |
 | P2 AST parsing | entities + raw relation sites per file | `preprocessing/ast_parser.py` | ✅ |
 | P3 Graph | resolve relations → edges / unresolved sites | `preprocessing/graph_builder.py`, `run_graph.py` | ✅ (all 297 snapshots) |
-| P4 BM25 index | search engine over entities | — | ⏭ next |
+| P4 BM25 index | search engine over entities | `preprocessing/entity_index.py`, `run_index.py` | ✅ (all 297 snapshots) |
 | P5 Issue cues | rule-based evidence from the issue text | — | ⏭ |
 | P6 Stats / figures | tables + plots for the seminar | — | ⏭ |
 
-**Tests:** 26 unit tests (config, collection, gold labels, graph), all passing.
+**Tests:** 30 unit tests (config, collection, gold labels, graph, index), all passing.
 
 **How to run:**
 ```bash
@@ -67,6 +67,7 @@ We checked every claim in `CLAUDE.md` against the paper itself (arXiv 2609.31176
 python scripts/run_pipeline.py --step collect
 python scripts/run_pipeline.py --step gold
 python scripts/run_pipeline.py --step graph --workers 6
+python scripts/run_pipeline.py --step index --workers 6
 pytest
 ```
 
@@ -95,6 +96,21 @@ pytest
   graph, so the correct answer is always reachable.
 - Skipped files (generated parsers, Python 2 scripts, broken linter fixtures, >1 MB files, symlinks) were all
   inspected; no hand-written source is lost.
+
+### P4 — Entity text + BM25 index (all 297 snapshots)
+- Each entity gets a text (path + qualified name + signature + code; classes/files show child signatures instead of
+  child bodies). Tokens split snake_case/camelCase. BM25 implemented directly (checked against the textbook formula).
+- 297 indexes (1.7 GB) with the same entity ids as the graph.
+- **Sanity check (issue text as query, plain BM25, tests excluded, 300 issues):**
+
+  | | @1 | @5 | @10 |
+  |---|---|---|---|
+  | File Hit | 49.0% | 74.3% | 82.3% |
+  | Function Hit (274 issues) | 28.8% | 48.5% | 59.9% |
+
+- Keyword search finds the right file most of the time, but misses the exact function in 40% of issues at top 10.
+  Example: `astropy__astropy-12907` → BM25 finds `separability_matrix` (named in the issue); the fix is in the helper
+  `_cstack`. Getting there needs the graph — this motivates SemNav's online stage.
 
 ## 5. Problems found and fixed (good material for the seminar)
 
@@ -129,12 +145,14 @@ pytest
 | `901bc24` | P2+P3 AST parser and Semantic Navigation Graph builder |
 | `8053523` | Switch explanation language to English in CLAUDE.md |
 | `d1de727` | Progress summary document |
-| (next) | Full graph run results + `added_classes` fix in P1 |
+| `09cdbfe` | Full graph run results + `added_classes` fix in P1 |
+| `beccbea` | P4 entity text and BM25 index |
+| (next) | P4 full-run results in docs |
 
 ## 8. Next steps
 
 1. ~~Finish the full graph build and check gold coverage~~ ✅ done.
-2. **P4** — entity text + BM25 index; sanity check: are gold functions in the top-k for each issue?
+2. ~~**P4** — entity text + BM25 index + sanity check~~ ✅ done.
 3. **P5** — rule-based issue cues for all 300 issues; how often does a cue directly name a gold file/function?
 4. **P6** — statistics and figures (notebook) + finish `docs/seminar1.md`.
 5. (Optional) Pyright smoke test on a few unresolved sites.

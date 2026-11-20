@@ -140,3 +140,34 @@ nodes of their snapshot's graph.
 *Found by this check:* 2 gold "edited classes" were actually classes **added** by the patch
 (`matplotlib__matplotlib-24265` `_StyleLibrary`, `sphinx-doc__sphinx-7686` `ModuleScanner`); P1 now stores them in
 `added_classes`.
+
+## P4 — Entity text + BM25 index
+
+**Entity text [paper: qualified name + declaration + documentation + implementation; details ours]:**
+- function = path + qualified name + signature + source (docstring included);
+- class = its own lines, with each method body replaced by the method's signature;
+- file = module-level lines (imports, constants, docstring), with every top-level body replaced by its signature.
+
+**Tokenizer [ours]:** identifiers are split on snake_case / camelCase and the full identifier is kept
+(`parse_date` → `parse_date parse date`); Python keywords and common English words are dropped.
+**BM25** (k1 = 1.2, b = 0.75) is implemented directly with a sparse matrix; a unit test checks it against the
+textbook formula. Index entity ids are exactly the graph's entity ids. 297 indexes, 1.7 GB.
+
+### Sanity check: plain BM25 with the issue text as the query (no cues, no graph, no agent)
+
+Test files are excluded from the ranking. A file's score is the best score of any entity in it. Function metrics are over
+the 274 issues whose gold labels include at least one pre-existing function.
+
+| | @1 | @5 | @10 |
+|---|---|---|---|
+| File Hit | 49.0% | 74.3% | 82.3% |
+| Function Hit | 28.8% | 48.5% | 59.9% |
+| Function Recall | 27.2% | 46.1% | 57.4% |
+
+Per repo (Function Hit@10): django 71.6%, matplotlib 63.6%, scikit-learn 63.6%, sphinx 56.2%, pytest 50.0%,
+sympy 40.9%, xarray 40.0%.
+
+**Reading:** keyword search usually finds the right *file*, but the exact *function* is missing from the top 10 for 40% of
+issues. Example `astropy__astropy-12907`: BM25 ranks `separability_matrix` first (the issue names it), while the fix is in
+the helper `_cstack`, which the issue never mentions. Reaching it needs the graph: start where search lands ("find"),
+then follow edges ("move"). This is what SemNav's online stage adds (cues, graph bonus, agent navigation).
