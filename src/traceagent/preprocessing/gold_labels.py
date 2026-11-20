@@ -1,6 +1,6 @@
 """P1 — gold labels: which files / functions did the real fix (`patch`) change?
 
-Rules [ours, see CLAUDE.md §3.2 "P1 details"]:
+Rules [see docs/seminar1.md, P1]:
 - Only `patch` is used (never `test_patch`).
 - '-' lines are located with the OLD file's AST; '+' lines with the NEW file's AST
   (new file = old file + patch, rebuilt in memory).

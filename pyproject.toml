@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "traceagent"
 version = "0.1.0"
-description = "TraceAgent: Repository-Level Issue Localization Using Semantic Navigation (graduation project based on the SemNav paper)."
+description = "TraceAgent: Repository-Level Issue Localization Using Semantic Navigation (graduation project)."
 readme = "README.md"
 requires-python = ">=3.11"
 

@@ -1,27 +1,54 @@
 # TraceAgent: Repository-Level Issue Localization Using Semantic Navigation
 
-Graduation project in Computer Science. TraceAgent is built on the architecture of
-**SemNav: Semantic Navigation for Repository-Level Issue Localization**
-([arXiv:2609.31176](https://arxiv.org/abs/2609.31176)).
+Graduation project in Computer Science.
 
-> Working with Claude Code: open this folder in Claude Code — `CLAUDE.md` holds the full project context
-> (design decisions, what the paper specifies vs. what we decided, and the step-by-step plan).
+## What TraceAgent does
 
-**Issue localization:** given a GitHub issue and a code repository, return a ranked list of the files and functions
-that need to change to fix the issue.
+When a bug is reported on GitHub, a developer first has to find **where** in the code the problem is. In a large
+repository (thousands of files) this is the hardest and slowest part of fixing a bug.
 
-**Current milestone (Seminar 1):** data collection and offline preprocessing on SWE-bench Lite. No agent and no LLM yet.
+**TraceAgent takes a GitHub issue and a code repository, and returns a ranked list of the files and functions that most
+likely need to change.**
 
-## Pipeline (offline)
+It works in two stages:
 
-| Step | Module | Output |
+1. **Offline (preprocessing — this milestone).** Turn each repository into data that can be searched and navigated:
+   - a **search index** over every file, class and function (to *find* a starting point from the issue's words);
+   - a **code graph** of how the code is connected — who contains, calls, imports, inherits from or references whom
+     (to *move* from a starting point to related code).
+2. **Online (next milestone).** An agent reads the issue, searches the index, walks the graph, collects evidence
+   for each candidate location, and submits a ranked list.
+
+**Current milestone (Seminar 1):** data collection and preprocessing on the SWE-bench Lite benchmark
+(300 real GitHub issues from 12 popular Python projects).
+
+## Pipeline
+
+| Step | What it does | Module |
 |---|---|---|
-| collect | `collection/` | SWE-bench Lite rows + 12 cloned repositories |
-| P1 gold | `preprocessing/gold_labels.py` | gold files/functions per issue |
-| P2+P3 graph | `preprocessing/ast_parser.py`, `graph_builder.py` | Semantic Navigation Graph (resolved edges + unresolved relation sites) |
-| P4 index | `preprocessing/entity_index.py` | BM25 index over entities |
-| P5 cues | `preprocessing/issue_cues.py` | rule-based issue cues |
-| P6 stats | `analysis/stats.py` | tables + figures |
+| collect | download the 300 issues and clone the 12 repositories | `collection/` |
+| P1 gold labels | from each issue's real fix, extract the files/functions that were changed (the "answer key") | `preprocessing/gold_labels.py` |
+| P2 AST parsing | parse every Python file into files, classes, functions and the relations between them | `preprocessing/ast_parser.py` |
+| P3 code graph | connect entities with 5 edge types: Contains, Calls, Imports, Inherits, References | `preprocessing/graph_builder.py` |
+| P4 search index | build a text for every entity and a BM25 search index over them | `preprocessing/entity_index.py` |
+| P5 issue cues | extract evidence (file paths, function names, errors, tracebacks) from the issue text | *next* |
+| P6 statistics | tables and figures | *next* |
+
+**Key idea in the graph:** a call like `helper()` whose target is certain is stored as an edge. A call like `obj.run()`,
+where the target depends on the runtime type of `obj`, is **not guessed** — it is stored as an *unresolved site* with its
+exact position, to be resolved precisely later with a language server.
+
+## Results so far
+
+| | |
+|---|---|
+| Issues / repositories / code snapshots | 300 / 12 / 297 |
+| Gold labels | 100% file-level agreement with an independent label set |
+| Code graphs | 297 built; every gold file and function is a node of its graph |
+| Calls whose target is not syntactically certain | 55% (handled by the language server later) |
+| Plain BM25 search, issue text as query | gold file in top 10 for 82% of issues; gold function in top 10 for 60% |
+
+Details, tables and findings: [docs/seminar1.md](docs/seminar1.md) · overview: [docs/progress_summary.md](docs/progress_summary.md).
 
 ## Setup (Windows, Python 3.12)
 
@@ -34,28 +61,29 @@ copy .env.example .env
 ```
 
 Edit `.env` → set `DATA_DIR` to a folder **outside OneDrive / any synced folder** (default `D:/traceagent-data`).
-All data (cloned repos, graphs, indexes) lives there and is never committed; rebuild it with the commands below.
+All data (cloned repositories, graphs, indexes) lives there and is never committed; rebuild it with the commands below.
 
 ## Run
 
 ```bash
 python scripts/run_pipeline.py --step info
 python scripts/run_pipeline.py --step collect --limit 10   # quick try: 10 issues, 2 repos
-python scripts/run_pipeline.py --step collect              # all 300 issues, 12 repos (~1.8 GB)
-python scripts/run_pipeline.py --step gold                 # P1 gold labels (+ CoSIL validation if available)
-python scripts/run_pipeline.py --step graph --workers 6    # P2+P3 graphs for all 297 snapshots
-python scripts/run_pipeline.py --step index --workers 6    # P4 BM25 indexes + sanity check vs gold
+python scripts/run_pipeline.py --step collect              # all 300 issues, 12 repos (~2 GB)
+python scripts/run_pipeline.py --step gold                 # P1 gold labels
+python scripts/run_pipeline.py --step graph --workers 6    # P2+P3 code graphs for all 297 snapshots
+python scripts/run_pipeline.py --step index --workers 6    # P4 search indexes + sanity check
 pytest
 ```
 
-`collect` downloads SWE-bench Lite (cached to `DATA_DIR/raw/swe_bench_lite.jsonl`), clones each needed repo once
-into `DATA_DIR/raw/repos/<owner>__<name>`, verifies every `base_commit` exists, and writes
-`DATA_DIR/processed/collection_report.json`. Re-running is safe: cached data and existing clones are reused.
+Every step is resumable (finished outputs are skipped); add `--overwrite` to recompute.
 
-`gold` writes `DATA_DIR/processed/gold/<instance_id>.json`. To validate against CoSIL, put
-[CoSIL's `evaluation/gt.json`](https://github.com/ZhonghaoJiang/CoSIL) at `DATA_DIR/raw/external/cosil_gt.json`;
-the report goes to `DATA_DIR/processed/stats/gold_vs_cosil.json`. Use `--overwrite` to recompute.
-Results and findings: [docs/seminar1.md](docs/seminar1.md).
+| Output (under `DATA_DIR`) | Content |
+|---|---|
+| `raw/swe_bench_lite.jsonl`, `raw/repos/` | the issues and the cloned repositories |
+| `processed/gold/<instance_id>.json` | gold files / functions per issue |
+| `processed/graphs/<repo>__<commit>/` | `entities`, `edges`, `sites` (`.jsonl.gz`), `stats.json`, `skipped.csv` |
+| `processed/index/<repo>__<commit>/` | BM25 index |
+| `processed/stats/` | evaluation reports |
 
 ## Project layout
 
@@ -63,16 +91,11 @@ Results and findings: [docs/seminar1.md](docs/seminar1.md).
 src/traceagent/
   helpers/        config (.env) + logging
   models/         data schemas
-  collection/     dataset loading, repo cloning
+  collection/     dataset loading, repository cloning
   preprocessing/  P1–P5
   analysis/       P6 statistics
-  resolution/     Pyright resolution (later phase)
-scripts/          CLI entry points
+  resolution/     language-server resolution (next milestone)
+scripts/          CLI entry point
 tests/            unit tests
 docs/             seminar write-ups
 ```
-
-## Acknowledgements
-Architecture from the SemNav paper (Wei, Lei, Li). Preprocessing design informed by
-[LocAgent](https://github.com/gersteinlab/LocAgent) (Apache-2.0); gold-label validation uses
-[CoSIL](https://github.com/ZhonghaoJiang/CoSIL)'s `gt.json`.

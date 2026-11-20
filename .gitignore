@@ -21,7 +21,7 @@ repos/
 *.jsonl.gz
 *.npz
 
-# Claude Code: CLAUDE.md is SHARED (committed); personal notes / permissions stay local
+# Personal local notes / settings
 CLAUDE.local.md
 .claude/settings.local.json
 

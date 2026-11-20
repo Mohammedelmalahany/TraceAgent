@@ -1,6 +1,6 @@
 """P3 — build the Semantic Navigation Graph from all parsed files of one snapshot.
 
-For every raw site the builder asks: is the target *syntactically determined*? [ours, CLAUDE.md §3.2]
+For every raw site the builder asks: is the target *syntactically determined*? [see docs/seminar1.md]
 
   resolved   -> Edge(src, dst, type)       the name leads, by static lookup only, to ONE repo entity:
                                            same-file definition, an explicit import, a module attribute

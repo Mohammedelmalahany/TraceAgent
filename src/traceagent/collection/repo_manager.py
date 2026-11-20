@@ -1,6 +1,6 @@
 """Clone each repository once and check out base commits on demand.
 
-Strategy (see CLAUDE.md §3.1): one working copy per repo under DATA_DIR/raw/repos/<owner>__<name>.
+Strategy (see docs/seminar1.md): one working copy per repo under DATA_DIR/raw/repos/<owner>__<name>.
 For each instance we `git checkout --force <base_commit>` in that folder, process it, then move on.
 """
 

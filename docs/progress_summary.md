@@ -9,7 +9,7 @@ the code we wrote, the results, and what comes next. For the detailed numbers, s
 
 ## 1. Review of the plan against the SemNav paper
 
-We checked every claim in `CLAUDE.md` against the paper itself (arXiv 2609.31176, HTML v1).
+We checked every claim of our plan against the paper itself (arXiv 2609.31176, HTML v1).
 
 **Confirmed (matches the paper):**
 - The 3 problems: ambiguous relation targets, implicit entity semantics, underspecified candidate state.
@@ -31,7 +31,7 @@ We checked every claim in `CLAUDE.md` against the paper itself (arXiv 2609.31176
 - **Offline vs online boundary.** Offline = anything that does not depend on the agent or an LLM. In the paper, issue
   cue extraction is the *first online step*; we precompute it because it is rule-based and deterministic.
 - **The paper says *what* to do, not *how*.** Example: it says "syntactically determined targets are resolved" but never
-  defines "syntactically determined". Every such decision is ours and is marked `[ours]` in `CLAUDE.md`.
+  defines "syntactically determined". Every such decision is ours and is marked `[ours]` in our design notes.
 - **Search weights α, β, γ** balance three signals (text similarity, exact cue match, graph neighbours). They are used
   only at search time by the agent → **not needed for Seminar 1**.
 - **Data-leakage rule:** retrieval and cues may only use `problem_statement`; `patch` is used only for gold labels;
@@ -137,17 +137,7 @@ pytest
 
 ## 7. Git history
 
-| Commit | Content |
-|---|---|
-| `7c1c0df` | Scaffold project structure, config and CLI skeleton |
-| `43d1ecd` | Data collection step (dataset loader + repo manager) |
-| `5277574` | P1 gold label extraction with CoSIL validation |
-| `901bc24` | P2+P3 AST parser and Semantic Navigation Graph builder |
-| `8053523` | Switch explanation language to English in CLAUDE.md |
-| `d1de727` | Progress summary document |
-| `09cdbfe` | Full graph run results + `added_classes` fix in P1 |
-| `beccbea` | P4 entity text and BM25 index |
-| (next) | P4 full-run results in docs |
+See `git log` on the repository.
 
 ## 8. Next steps
 

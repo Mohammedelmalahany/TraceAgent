@@ -3,7 +3,7 @@
 Nothing is resolved here; the parser only records WHAT is used WHERE. `graph_builder` (P3) then decides,
 with the whole repository in view, whether each site's target is syntactically determined.
 
-Rules [ours, CLAUDE.md §3.2]:
+Rules [see docs/seminar1.md]:
 - Entities: the file, classes (incl. nested classes), functions/methods. Functions/classes defined INSIDE a
   function are folded into that function (their code and relations belong to it).
 - Relation sites are attributed to the innermost entity; module-level code belongs to the file entity.
