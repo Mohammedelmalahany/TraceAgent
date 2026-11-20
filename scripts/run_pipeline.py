@@ -59,6 +59,11 @@ def main() -> None:
 
         run_graph(settings, limit=args.limit, instance_ids=args.instances, overwrite=args.overwrite,
                   workers=args.workers)
+    elif args.step == "index":
+        from semnav_gp.preprocessing.run_index import run_index
+
+        run_index(settings, limit=args.limit, instance_ids=args.instances, overwrite=args.overwrite,
+                  workers=args.workers)
     else:
         raise SystemExit(f"Step '{args.step}' is not implemented yet.")
 
